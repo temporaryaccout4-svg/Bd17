@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  background:black;
+  color:white;
+  font-family:sans-serif;
+  overflow:hidden;
+}
+
+/* SCREEN SYSTEM */
+.screen{
+  display:none;
+  width:100vw;
+  height:100vh;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  position:relative;
+}
+
+.show{display:flex;}
+
+/* CINEMATIC FADE */
+.fadeIn{
+  animation:fadeIn 1s ease;
+}
+@keyframes fadeIn{
+  from{opacity:0; transform:scale(1.05);}
+  to{opacity:1; transform:scale(1);}
+}
+
+/* BUTTON */
+button{
+  padding:14px 26px;
+  border:none;
+  border-radius:30px;
+  background:linear-gradient(45deg,#ff4d6d,#6cf);
+  color:white;
+  font-size:16px;
+  box-shadow:0 0 20px rgba(255,100,150,0.6);
+}
+
+/* INPUT */
+input{
+  padding:12px;
+  border-radius:20px;
+  border:none;
+  text-align:center;
+}
+
+/* BIRTHDAY */
+#photo{
+  width:70vw;
+  height:70vw;
+  object-fit:cover;
+  border-radius:20px;
+  box-shadow:0 0 25px pink;
+  margin:10px;
+  transition:opacity 1s;
+}
+
+#wish{
+  font-size:4.3vw;
+  line-height:1.7;
+}
+
+/* COUNTDOWN */
+#count{
+  font-size:22vw;
+  animation:pop 0.7s infinite alternate;
+}
+@keyframes pop{
+  from{transform:scale(1);}
+  to{transform:scale(1.25);}
+}
+
+/* CINEMATIC DARK OVERLAY */
+#blackout{
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:black;
+  display:none;
+  z-index:10;
+}
+
+/* PROPOSAL */
+#proposal{
+  background:black;
+  overflow:hidden;
+}
+
+#proposalImg{
+  position:absolute;
+  bottom:-120%;
+  width:100%;
+  transform:scale(0.85);
+  filter:drop-shadow(0 0 25px pink);
+  transition:all 4s cubic-bezier(.2,.8,.2,1);
+}
+
+/* PARTICLES */
+.particle{
+  position:absolute;
+  width:4px;
+  height:4px;
+  background:white;
+  border-radius:50%;
+  animation:float 6s linear infinite;
+}
+@keyframes float{
+  from{transform:translateY(100vh);}
+  to{transform:translateY(-10vh);}
+}
+</style>
+</head>
+
+<body>
+
+<div id="blackout"></div>
+
+<!-- LOGIN -->
+<div id="login" class="screen show">
+  <h2>🔐 Private Access</h2>
+  <input id="pass" placeholder="Enter Password">
+  <button onclick="check()">Unlock</button>
+</div>
+
+<!-- BIRTHDAY -->
+<div id="main" class="screen">
+  <h2>Happy Birthday Samiksha 💖</h2>
+  <img id="photo" src="photo1.jpg">
+  <p id="wish"></p>
+  <button onclick="startCountdown()">Tap for Surprise 💖</button>
+</div>
+
+<!-- COUNTDOWN -->
+<div id="countScreen" class="screen">
+  <h1 id="count">5</h1>
+</div>
+
+<!-- PROPOSAL -->
+<div id="proposal" class="screen">
+  <img id="proposalImg" src="proposal-card.jpg">
+</div>
+
+<audio id="boom" src="boom.mp3"></audio>
+
+<script>
+
+/* SCREEN CONTROL */
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("show","fadeIn"));
+  let el=document.getElementById(id);
+  el.classList.add("show","fadeIn");
+}
+
+/* PASSWORD */
+function check(){
+  let val=document.getElementById("pass").value.trim().toLowerCase();
+
+  if(val==="angry bird"){
+    document.getElementById("boom").play();
+    show("main");
+    typeWish();
+  } else {
+    alert("Wrong password");
+  }
+}
+
+/* SLOW WISH */
+let text=`Wishing you a very happy and joyful birthday 🎂💗
+May your life always be filled with happiness, love, and success.
+May all your dreams and wishes come true.
+It’s not just your birthday… it’s the day someone special like you came into this world and made my life better.
+You’ve become my comfort, my smile, my everything.
+Stay the same, my favourite Angry Bird 🐦❤️
+Once again, happy birthday 💗✨`;
+
+let i=0;
+
+function typeWish(){
+  let box=document.getElementById("wish");
+  box.innerHTML="";
+  let t=setInterval(()=>{
+    box.innerHTML+=text.charAt(i);
+    i++;
+    if(i>=text.length) clearInterval(t);
+  },65);
+}
+
+/* PHOTO SLIDER */
+let photos=["photo1.jpg","photo2.jpg","photo3.jpg","photo4.jpg"];
+let p=0;
+
+setInterval(()=>{
+  let img=document.getElementById("photo");
+  if(!img) return;
+  p=(p+1)%photos.length;
+  img.src=photos[p];
+},2500);
+
+/* COUNTDOWN + MUSIC TIMING */
+function startCountdown(){
+
+  show("countScreen");
+
+  let music=new Audio("makhamali.mp3");
+  music.loop=true;
+  music.play();
+
+  let c=5;
+
+  let t=setInterval(()=>{
+    c--;
+    document.getElementById("count").innerText=c;
+
+    if(c===0){
+      clearInterval(t);
+
+      cinematicReveal();
+    }
+  },1000);
+}
+
+/* ULTIMATE CINEMA REVEAL */
+function cinematicReveal(){
+
+  document.getElementById("blackout").style.display="block";
+
+  setTimeout(()=>{
+    document.getElementById("blackout").style.display="none";
+    show("proposal");
+    createParticles();
+    animateProposal();
+  },1200);
+}
+
+/* LEGENDARY ENTRY */
+function animateProposal(){
+  let img=document.getElementById("proposalImg");
+
+  setTimeout(()=>{
+    img.style.bottom="0";
+    img.style.transform="scale(1)";
+  },300);
+}
+
+/* PARTICLES */
+function createParticles(){
+  for(let i=0;i<30;i++){
+    let d=document.createElement("div");
+    d.className="particle";
+    d.style.left=Math.random()*100+"%";
+    d.style.animationDuration=(3+Math.random()*4)+"s";
+    document.body.appendChild(d);
+  }
+}
+
+</script>
+
+</body>
+</html>
